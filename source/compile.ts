@@ -20,7 +20,7 @@ const allAction:Partial<{[key in ValidCommand]: ARGUMENT<CONFIG>[]}>={};
 
 allAction["compile"] = [
     {name:"-output",alias:"-o", desc:"Release folder",argv:"release folder", defaultValue:"../release",field:"output",type:"string"},
-    {name:"-source",alias:"-s", desc:"Asset repository", defaultValue:"armf.rmf.sdks",field:"source",type:"string"},
+    {name:"-source",alias:"-s", desc:"Asset repository", defaultValue: process.env.REPO || 'armf.core.utility',field:"source",type:"string"},
     {name:"-help",alias:"-h",desc:"Showing help",type:"boolean"}
 ]
 allAction["help"] = []
