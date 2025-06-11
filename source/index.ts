@@ -52,7 +52,7 @@ const defConfig:CONFIG ={
     command:aCommand||VALID_COMMAND[VALID_COMMAND.length-1],
     host:"https://api.github.com",
     owner: process.env.OWNER|| 'RMF-SinWah-Core',
-    repo: process.env.REPO || 'armf-core-utility',
+    repo: process.env.REPO || 'armf.core.utility',
     tag: process.env.TAG ||  'development-build',
     token:"",
     save:"",
