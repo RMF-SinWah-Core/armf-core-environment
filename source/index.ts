@@ -38,16 +38,35 @@ type ASSETINFO =  {releaseName:string, downLoad:string, assetName:string}
 function cmd(c:string){
     return (os.platform()==="win32")?`${c}.cmd`:c;
 }
+const argv = process.argv.slice(2);
+    
+const cmds = argv.splice(0,1)[0];
+var aCommand = cmds ? VALID_COMMAND.reduce((p,c)=>{
+    if(cmds.toLowerCase()===c.toLowerCase())p=c;
+    return p;
+},VALID_COMMAND[VALID_COMMAND.length-1]):null;
 
+
+const defConfig:CONFIG ={
+    argv:argv,
+    command:aCommand||VALID_COMMAND[VALID_COMMAND.length-1],
+    host:"https://api.github.com",
+    owner: process.env.OWNER|| 'RMF-SinWah-Core',
+    repo: process.env.REPO || 'armf-core-utility',
+    tag: process.env.TAG ||  'development-build',
+    token:"",
+    save:"",
+    all:false,download:false
+}
 
 
 var allAction:Partial<{[key in ValidCommand]: ARGUMENT<CONFIG>[]}>={};
 
 allAction["install"] =[
     {name:"-token",alias:"-t", desc:"Github Personal acess token",argv:"PST TToken", defaultValue:process.env.ASTUTE_TOKEN,field:"token",type:"string" },
-    {name:"-owner",alias:"-o", desc:"Asset repository's organization",argv:"organization name", defaultValue:"armf-industries",field:"owner",type:"string"},
-    {name:"-repo",alias:"-r", desc:"Asset repository",argv:"repository name", defaultValue:"armf.rmf.sdks",field:"repo",type:"string"},
-    {name:"-tag",alias:"-t", desc:"Asset Deployment name",argv:"deployment name", defaultValue:"development-build",field:"tag",type:"string"},
+    {name:"-owner",alias:"-o", desc:"Asset repository's organization",argv:"organization name", defaultValue:defConfig.owner,field:"owner",type:"string"},
+    {name:"-repo",alias:"-r", desc:"Asset repository",argv:"repository name", defaultValue:defConfig.repo,field:"repo",type:"string"},
+    {name:"-tag",alias:"-t", desc:"Asset Deployment name",argv:"deployment name", defaultValue:defConfig.tag,field:"tag",type:"string"},
     {name:"-save",alias:"-s",desc:"remove all download upon installation complete",argv:"location where binary is stored",field:"save",type:"boolean"},
     {name:"", desc:"list of asset to be installed", argv:["asset name to be deployed"],field:"argv",type:"string"},
     {name:"-download",alias:"-d",desc:"no install",field:"download",type:"boolean"},
@@ -55,9 +74,9 @@ allAction["install"] =[
 ]
 allAction["list"] = [
     {name:"-token",alias:"-t", desc:"Github Personal acess token",argv:["PST TToken"], defaultValue:process.env.ASTUTE_TOKEN,field:"token",type:"string"},
-    {name:"-owner",alias:"-o", desc:"Asset repository's organization",argv:["organization name"], defaultValue:"armf-industries",field:"owner",type:"string"},
-    {name:"-repo",alias:"-r", desc:"Asset repository",argv:["repository name"], defaultValue:"armf.rmf.sdks",field:"repo",type:"string"},
-    {name:"-tag",alias:"-t", desc:"Asset Deployment name",argv:["deployment name"], defaultValue:"development-build",field:"tag",type:"string"},
+    {name:"-owner",alias:"-o", desc:"Asset repository's organization",argv:["organization name"], defaultValue:defConfig.owner,field:"owner",type:"string"},
+    {name:"-repo",alias:"-r", desc:"Asset repository",argv:["repository name"], defaultValue:defConfig.repo,field:"repo",type:"string"},
+    {name:"-tag",alias:"-t", desc:"Asset Deployment name",argv:["deployment name"], defaultValue:defConfig.tag,field:"tag",type:"string"},
     {name:"-all",alias:"-a",desc:"show from all repo",field:"all",type:"string"},
     {name:"-help",alias:"-h",desc:"Showing help",type:"boolean"}
 ]
@@ -247,24 +266,7 @@ function processArgv(config:CONFIG|null){
     }
 }
 try{
-    const argv = process.argv.slice(2);
     
-    const cmd = argv.splice(0,1)[0];
-    var aCommand = cmd ? VALID_COMMAND.reduce((p,c)=>{
-        if(cmd.toLowerCase()===c.toLowerCase())p=c;
-        return p;
-    },VALID_COMMAND[VALID_COMMAND.length-1]):null;
-    const defConfig:CONFIG ={
-        argv:argv,
-        command:aCommand||VALID_COMMAND[VALID_COMMAND.length-1],
-        host:"https://api.github.com",
-        owner: 'armf-industries',
-        repo: 'armf.rmf.sdks',
-        tag: 'development-build',
-        token:"",
-        save:"",
-        all:false,download:false
-    }
     
     const config = getConfiguration<ValidCommand,STR_PROPS,BOOL_PROPS,CONFIG>(aCommand,allAction,defConfig,...argv);
     if(config===null)process.exit(0);
