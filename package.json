@@ -1,0 +1,29 @@
+{
+  "name": "@rmf/environment",
+  "version": "1.0.0",
+  "main": "target/index.js",
+  "types": "./types",
+  "scripts": {
+    "clean": "rimraf ./node_modules ./target ./types",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "build:dev": "tsc -d --declarationDir types",
+    "pack": "npm run build:dev & cp -r . cust_pack & cd cust_pack & npm pack & cd .. & cp ./cust_pack/*.tgz . & rm -r ./cust_pack"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  },
+  "bin": {
+    "setup": "./target/index.js",
+    "compile": "./target/compile.js",
+    "parallel": "./target/projCli.js",
+    "mkproj": "./target/new_project.js",
+    "rename": "./target/renameFile.js"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.12"
+  }
+}
