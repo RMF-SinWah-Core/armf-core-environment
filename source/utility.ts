@@ -12,7 +12,7 @@ export function spawnProcess(command:string[], config?:{cwd?:string}){
     return new Promise<number>((res)=>{
         const action = command.splice(0,1);
         const env = {cwd:config?.cwd, env:process.env,stdio:"inherit" as const};
-        const npm = os.platform()==="win32"?spawn("cmd.exe",["/c",...action,...command])
+        const npm = os.platform()==="win32"?spawn("cmd.exe",["/c",...action,...command],env)
             : spawn(action[0],command,env);
         console.log("executing ",action, command)
         npm.on("close",(code)=>{
