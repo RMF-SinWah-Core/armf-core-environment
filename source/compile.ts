@@ -88,42 +88,43 @@ function compile(temp:string, currentPkg:PACKAGE){
     },currentPkg.dependencies||{});
     const fn = currentPkg.name+"-"+currentPkg.version;
     return new Promise<void>(Res=>{
-        fs.mkdir(BASE,()=>{
-            fs.rm(path.join(temp,".github"),{recursive:true},()=>{
-                fs.writeFile(path.join(temp,"package.json"),JSON.stringify(currentPkg,undefined,"  "),{encoding:"utf-8"},()=>{
-                    const callback = config?.source?(cb:()=>void)=>{
-                        fs.rm(path.join(temp,"types"),{recursive:true},()=>{
-                            exec("npm pack",{cwd:temp},()=>{
-                                fs.rename(path.join(temp,getActualName(fn)+".tgz"),path.join( BASE, getFileName(currentPkg.name+".dev.tgz")),()=>{
-                                    cb();
-                                });
-                            })
-                        });
-                    }:(cb:()=>void)=>{
-                        fs.rm(path.join(temp,"source"),{recursive:true},()=>{
-                            fs.rename(path.join(temp,"types"),path.join(temp,"source"),()=>{
+        fs.mkdir(BASE+"_dev",()=>{
+            fs.mkdir(BASE,()=>{
+                fs.rm(path.join(temp,".github"),{recursive:true},()=>{
+                    fs.writeFile(path.join(temp,"package.json"),JSON.stringify(currentPkg,undefined,"  "),{encoding:"utf-8"},()=>{
+                        const callback = config?.source?(cb:()=>void)=>{
+                            fs.rm(path.join(temp,"types"),{recursive:true},()=>{
                                 exec("npm pack",{cwd:temp},()=>{
-                                    fs.rename(path.join(temp,getActualName(fn+".tgz")),path.join( BASE, getFileName(currentPkg.name+".dev.tgz")),()=>{
+                                    fs.rename(path.join(temp,getActualName(fn)+".tgz"),path.join( BASE, getFileName(currentPkg.name+".dev.tgz")),()=>{
                                         cb();
                                     });
                                 })
                             });
-                        });
-                    }
-                    callback(()=>{
-                        fs.rm(path.join(temp,"source"),{recursive:true},()=>{
-                            exec('npm pack', {cwd:temp},()=>{
-                                fs.copyFile(path.join(temp,getActualName(fn+".tgz")) ,path.join(BASE,getFileName(currentPkg.name+".tgz")),()=>{
-                                    fs.rm(temp,{recursive:true},()=>{
-                                        Res();
+                        }:(cb:()=>void)=>{
+                            fs.rm(path.join(temp,"source"),{recursive:true},()=>{
+                                fs.rename(path.join(temp,"types"),path.join(temp,"source"),()=>{
+                                    exec("npm pack",{cwd:temp},()=>{
+                                        fs.rename(path.join(temp,getActualName(fn+".tgz")),path.join( BASE+"_dev", getFileName(currentPkg.name+".tgz")),()=>{
+                                            cb();
+                                        });
                                     })
                                 });
                             });
+                        }
+                        callback(()=>{
+                            fs.rm(path.join(temp,"source"),{recursive:true},()=>{
+                                exec('npm pack', {cwd:temp},()=>{
+                                    fs.copyFile(path.join(temp,getActualName(fn+".tgz")) ,path.join(BASE,getFileName(currentPkg.name+".tgz")),()=>{
+                                        fs.rm(temp,{recursive:true},()=>{
+                                            Res();
+                                        })
+                                    });
+                                });
+                            });
                         });
-                    });
-                })
+                    })
+                });
             });
-           
         })
     })
 }
