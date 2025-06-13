@@ -236,8 +236,8 @@ function processArgv(config:CONFIG|null){
                     libs.map(lib=>()=>new Promise<{[key:string]:string}>(res=>{
                         if(config.download)return res({});
                         spawnProcess([cmd("npm"),"install","--save-dev",  "./"+lib]).finally(()=>{
-
-                            spawnOutput(["tar","xfO","./"+lib,"--wildcards","*age.json"]).then(data=>{
+                            const args = os.platform()==="win32"?["tar","-xf","./"+lib,"*age.json" ]:["tar","xfO","./"+lib,"--wildcards","*age.json"]
+                            spawnOutput(args).then(data=>{
                                 const x=JSON.parse(data);
                                 
                                 if(!config.save?.length){
