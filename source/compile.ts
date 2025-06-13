@@ -65,7 +65,8 @@ function prepareFolder():Promise<{pkg:PACKAGE,temp:string}>{
 }
 
 function getFileName(pkg:string){
-    return path.basename(pkg);
+    if(pkg.startsWith("@"))pkg=pkg.substring(1);
+    return pkg.split("/").join("-");
 }
 function getActualName(pkg:string){
     if(pkg.startsWith("@"))pkg=pkg.substring(1);
@@ -79,7 +80,7 @@ function compile(temp:string, currentPkg:PACKAGE){
     console.log("NC",temp)
     currentPkg.dependencies =  Object.entries(currentPkg.dependencies||{}).reduce((p,c)=>{
         if(c[1].startsWith("file:../")){
-            p[c[0]]="file:./"+c[1].substring(8).toLowerCase()+".tgz";
+            p[c[0]]="file:./"+getFileName(c[1].substring(8).toLowerCase()+".tgz");
         }
          if(c[1].startsWith("file:release/")){
             p[c[0]]="file:./"+c[1].substring(13).toLowerCase();
