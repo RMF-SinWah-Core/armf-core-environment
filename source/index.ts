@@ -239,7 +239,7 @@ function processArgv(config:CONFIG|null){
                             const args = os.platform()==="win32"?["tar","-xf","./"+lib,"*age.json" ]:["tar","xfO","./"+lib,"--wildcards","*age.json"]
                             spawnOutput(args).then(data=>{
                                 console.log(data);
-                                var pkg = os.platform()==="win32"?new Promise((xx,yy)=>{
+                                var pkg = os.platform()==="win32"?new Promise<PACKAGE>((xx,yy)=>{
                                     fs.readFile("./package/package.json",{encoding:"utf-8"},(err, data)=>{
                                         fs.rm("./package",{recursive:true},()=>{
                                             xx(JSON.parse(data));
@@ -253,17 +253,19 @@ function processArgv(config:CONFIG|null){
                                     }
                                 })
 
-                                
-                                if(!config.save?.length){
-                                    var dir = path.dirname(lib);
-                                    if(dir.length){
-                                        console.log("clearing",dir)
-                                        return fs.rm(dir,{recursive:true}, ()=>res(x.devDependencies||{}));
-                                    }else{
-                                        res(x.devDependencies||{});
+                                pkg.then(x=>{
+                                    if(!config.save?.length){
+                                        var dir = path.dirname(lib);
+                                        if(dir.length){
+                                            console.log("clearing",dir)
+                                            return fs.rm(dir,{recursive:true}, ()=>res(x.devDependencies||{}));
+                                        }else{
+                                            res(x.devDependencies||{});
+                                        }
                                     }
-                                }
-                                res(x.devDependencies||{});
+                                
+                                    res(x.devDependencies||{});
+                                });
                             });
                         });
                     })).reduce((p,c)=>new Promise<{[key:string]:string}>(res=>{
