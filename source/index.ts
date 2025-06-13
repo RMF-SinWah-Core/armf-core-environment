@@ -185,9 +185,10 @@ function processArgv(config:CONFIG|null){
         },Promise.resolve({})).then(cfg=>{
             console.log(Object.values(cfg));
         });
-        case "install":getAssetList(config).then(resp=>{
-            const func : ((argv:[x:string,y:ASSETINFO] )=>boolean)|null = 
-                config.argv.find(x=>x==="?dev") ?  (argv)=>argv[0].endsWith(".dev.tgz")  : (config.argv.find(x=>x==="?prod")?(argv)=>argv[0].endsWith(".tgz") && !argv[0].endsWith(".dev.tgz") : null  );
+        case "install":
+            
+        getAssetList(config).then(resp=>{
+            const func = ()=>true;
             var rep =  Object.entries(resp);
             var pro=Promise.resolve();
             if(func!==null){
