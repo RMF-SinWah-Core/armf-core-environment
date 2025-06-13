@@ -5,7 +5,7 @@ import path from "path"
 import fs from "fs"
 import os from "os"
 import { spawnProcess, getConfiguration, spawnOutput } from "./utility";
-import { ARGUMENT, BASE_CONFIG } from "./definition";
+import { ARGUMENT, BASE_CONFIG, PACKAGE } from "./definition";
 import { randomUUID } from "crypto";
 
 const VALID_COMMAND = ["install","list","help"] as const;
@@ -238,7 +238,21 @@ function processArgv(config:CONFIG|null){
                         spawnProcess([cmd("npm"),"install","--save-dev",  "./"+lib]).finally(()=>{
                             const args = os.platform()==="win32"?["tar","-xf","./"+lib,"*age.json" ]:["tar","xfO","./"+lib,"--wildcards","*age.json"]
                             spawnOutput(args).then(data=>{
-                                const x=JSON.parse(data);
+                                console.log(data);
+                                var pkg = os.platform()==="win32"?new Promise((xx,yy)=>{
+                                    fs.readFile("./package/package.json",{encoding:"utf-8"},(err, data)=>{
+                                        fs.rm("./package",{recursive:true},()=>{
+                                            xx(JSON.parse(data));
+                                        });
+                                    });
+                                }):new Promise<PACKAGE>((rr,jj)=>{
+                                    try{     
+                                        rr(JSON.parse(data));
+                                    }catch(ex){
+                                        jj();
+                                    }
+                                })
+
                                 
                                 if(!config.save?.length){
                                     var dir = path.dirname(lib);
