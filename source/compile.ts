@@ -141,7 +141,7 @@ function compile(temp:string, currentPkg:PACKAGE,dir:string){
 }
 
 prepareFolder().then(pkg=>{
-    compile(pkg.temp,pkg.pkg).finally(()=>{
+    compile(pkg.temp,pkg.pkg,process.cwd()).finally(()=>{
         console.log("done")
     })
 })
