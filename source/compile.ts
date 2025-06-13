@@ -96,7 +96,7 @@ function compile(temp:string, currentPkg:PACKAGE){
                             const callback = config?.source?(cb:()=>void)=>{
                                 fs.rm(path.join(temp,"types"),{recursive:true},()=>{
                                     exec("npm pack",{cwd:temp},()=>{
-                                        fs.rename(path.join(temp,getActualName(fn)+".tgz"),path.join( BASE, getFileName(currentPkg.name+".dev.tgz")),()=>{
+                                        fs.rename(path.join(temp,getActualName(fn)+".tgz"),path.join( BASE, getFileName(currentPkg.name+".tgz")),()=>{
                                             cb();
                                         });
                                     })
@@ -105,7 +105,7 @@ function compile(temp:string, currentPkg:PACKAGE){
                                 fs.rm(path.join(temp,"source"),{recursive:true},()=>{
                                     fs.rename(path.join(temp,"types"),path.join(temp,"source"),()=>{
                                         exec("npm pack",{cwd:temp},()=>{
-                                            fs.rename(path.join(temp,getActualName(fn+".tgz")),path.join( BASE+"_dev", getFileName(currentPkg.name+".tgz")),()=>{
+                                            fs.rename(path.join(temp,getActualName(fn+".tgz")),path.join( BASE, getFileName(currentPkg.name+".tgz")),()=>{
                                                 cb();
                                             });
                                         })
