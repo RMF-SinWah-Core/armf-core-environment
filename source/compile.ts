@@ -74,19 +74,27 @@ function getActualName(pkg:string){
     
 }
 
-function compile(temp:string, currentPkg:PACKAGE){
+function compile(temp:string, currentPkg:PACKAGE,dir:string){
     
     const BASE = config?.output||"../release";
     console.log("NC",temp)
+    const arr:[string,string][] = [];
     currentPkg.dependencies =  Object.entries(currentPkg.dependencies||{}).reduce((p,c)=>{
         if(c[1].startsWith("file:../")){
-            p[c[0]]="file:./"+getFileName(c[1].substring(8).toLowerCase()+".tgz");
+            arr.push([c[0],c[1].substring(5)]);
         }
          if(c[1].startsWith("file:release/")){
             p[c[0]]="file:./"+c[1].substring(13).toLowerCase();
         }
         return p;
     },currentPkg.dependencies||{});
+    currentPkg.dependencies = arr.reduce((p,c)=>{
+        const txt = fs.readFileSync(path.join(dir,c[1]),{encoding:"utf-8"});
+        var pkg:PACKAGE = JSON.parse(txt);
+        p[c[0]] = "file:./"+getFileName(pkg.name+".tgz");
+        return p;
+    },currentPkg.dependencies);
+    console.log("===========",currentPkg.dependencies);
     const fn = currentPkg.name+"-"+currentPkg.version;
     return new Promise<void>(Res=>{
         fs.mkdir(BASE+"_prod",()=>{
