@@ -50,7 +50,6 @@ function prepareFolder():Promise<{pkg:PACKAGE,temp:string}>{
             const temporary = `${new Date().getTime()}-${randomUUID().toString()}`.substring(0,10)
             fs.readdir(".",(err, data)=>{
                 fs.mkdir(temporary,()=>{
-
                     (data.map(x=>()=>copyFolder(x,path.join(temporary,x),""))).reduce((p:Promise<void>,c)=>new Promise(res=>{
                         p.finally(()=>{
                             c().finally(res);
@@ -89,7 +88,7 @@ function compile(temp:string, currentPkg:PACKAGE,dir:string){
         return p;
     },currentPkg.dependencies||{});
     currentPkg.dependencies = arr.reduce((p,c)=>{
-        const txt = fs.readFileSync(path.join(dir,c[1]),{encoding:"utf-8"});
+        const txt = fs.readFileSync(path.join(dir,c[1],"package.json"),{encoding:"utf-8"});
         var pkg:PACKAGE = JSON.parse(txt);
         p[c[0]] = "file:./"+getFileName(pkg.name+".tgz");
         return p;
