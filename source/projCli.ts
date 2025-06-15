@@ -18,7 +18,7 @@ const [argument, action] = (instance||[]).reduce((p:[string[],string[]],c)=>{
 
 const error = argument.indexOf("-e")>=0;
 const quick = argument.indexOf("-q")>=0;
-const skip  = argument.indexOf("-n")>=0?["node_modules",".git",path.basename(__dirname),"release"]:[];
+const skip  = argument.indexOf("-n")>=0?["node_modules",".git",".github",path.basename(__dirname),"release"]:[];
 const projOnly = argument.indexOf("-p")>=0;
 
 function getFolders(working:string, projOnly?:boolean, skip?:string[]){
